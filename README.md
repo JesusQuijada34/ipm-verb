@@ -3,7 +3,8 @@
 
 # Estructura de un Paquete Influent:
 ### La estructura de un paquete puede ser asi:
-### Nombre logico: > empresa.nombre.vX
+### Nombre logico:
+> empresa.nombre.vX
 ### Carpetas:
 > app,assets,banderas,config,docs,ke,lib,source
 ### Archivos generados:
