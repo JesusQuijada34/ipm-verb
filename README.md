@@ -4,8 +4,10 @@
 # Estructura de un Paquete Influent:
 ### La estructura de un paquete puede ser asi:
 ### Nombre logico: > empresa.nombre.vX
-### Carpetas: > app,assets,banderas,config,docs,ke,lib,source
-### Archivos generados: > "..\details.xml", "app\app-icon.ico", "banderas\manifest.xml", "lib\requeriments.txt", "...\nombre.vX.py", "...\readme.md"
+### Carpetas:
+> app,assets,banderas,config,docs,ke,lib,source
+### Archivos generados:
+> "..\details.xml", "app\app-icon.ico", "banderas\manifest.xml", "lib\requeriments.txt", "...\nombre.vX.py", "...\readme.md"
 ### Puede ser generado con una IA, Gracias MICROSOFT COPILOT, Por el apoyo que he recibido en la making del project!!!
 
 # 🛠️ Origen del proyecto
