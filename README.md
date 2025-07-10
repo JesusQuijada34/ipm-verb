@@ -1,6 +1,13 @@
 # 🧭 Influent Package Manager (IPM)
 ### Influent Package Manager (IPM) es un sistema modular de gestión y empaquetado de aplicaciones, diseñado por Jesús Quijada, con el propósito de simplificar y estandarizar el desarrollo de software distribuible, especialmente en entornos Linux como Zorin OS. Más allá de ser un simple empaquetador, IPM es una filosofía de organización creativa y técnica que refleja una preocupación por la estética, la compatibilidad multiplataforma y la autonomía del desarrollador.
 
+# Estructura de un Paquete Influent:
+### La estructura de un paquete puede ser asi:
+### Nombre logico: > empresa.nombre.vX
+### Carpetas: > app,assets,banderas,config,docs,ke,lib,source
+### Archivos generados: > "..\details.xml", "app\app-icon.ico", "banderas\manifest.xml", "lib\requeriments.txt", "...\nombre.vX.py", "...\readme.md"
+### Puede ser generado con una IA, Gracias MICROSOFT COPILOT, Por el apoyo que he recibido en la making del project!!!
+
 # 🛠️ Origen del proyecto
 ### IPM fue creado como una solución personal para automatizar y estructurar el flujo de trabajo al desarrollar múltiples aplicaciones creativas — como Influent Camera — permitiendo:
 
