@@ -16,7 +16,7 @@
 
 ### Documentar cada app automáticamente
 
-### Generar paquetes .ifp y .ifb para fácil distribución
+### Generar paquetes .ifp (Paquete Full Core) y .ifb (Paquete Lite U) para fácil distribución
 
 ### Acompañar cada entrega con su ícono, requerimientos y metadata descriptiva
 
@@ -60,9 +60,6 @@
 > ANSI para interfaz en terminal
 
 > Formato .ifp y .ifb como estándar personalizado
-
-# 🧪 Estructura típica de un paquete
-``` influent.camera.v1/ ├── app/ │ ├── camera.v1.py │ └── app-icon.ico ├── assets/ ├── config/ ├── docs/ ├── lib/ │ └── requirements.txt ├── details.xml └── README.md ```
 
 # 📦 ¿Qué vendrá después?
 ### IPM es solo el principio de un ecosistema donde cada app puede ser creada, empaquetada, documentada y distribuida con total estilo y control. Jesús planea integrar funciones como:
