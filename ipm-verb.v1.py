@@ -1,223 +1,171 @@
-import os
-import time
-import shutil
-import hashlib
-import zipfile
-import xml.etree.ElementTree as ET
-from tqdm import tqdm
-import subprocess
+import os, sys, json, subprocess, pkg_resources
+from PyQt5.QtWidgets import (QApplication, QWidget, QPushButton, QVBoxLayout,
+                             QLabel, QMessageBox)
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QStyle
 
-# 🎨 Colores ANSI
-CYAN = "\033[96m"
-GREEN = "\033[92m"
-YELLOW = "\033[93m"
-RED = "\033[91m"
-MAGENTA = "\033[95m"
-RESET = "\033[0m"
-
-# 📁 Rutas base
-BASE_DIR = os.path.expanduser("~/Documentos/Influent Packages")
-DESKTOP = os.path.expanduser("~/Escritorio")
-IPM_ICON_PATH = os.path.join(os.path.dirname(__file__), "app", "app-icon.ico")
-
-# 📁 Carpetas predeterminadas
-DEFAULT_FOLDERS = "app,assets,banderas,config,docs,ke,lib,source"
-
-# 🧠 Clasificación por edad
-AGE_RATINGS = {
-    "adult": "Solo Adultos",
-    "violence": "18+",
-    "kids": "Para niños",
-    "teen": "Solo Adolescentes",
-    "camera": "Todas las edades",
-    "calculator": "Todas las edades",
-    "game": "18-",
+STYLE_GLOBAL = """
+QWidget {
+    background-color: #f5f5f5;
+    font-family: Arial;
+    color: #333;
+    border: none;
 }
 
-# 🧾 Crear archivo XML de detalles
-def create_details_xml(path, empresa, nombre_logico, nombre_completo, version):
-    full_name = f"{empresa}.{nombre_logico}.v{version}"
-    hash_val = hashlib.sha256(full_name.encode()).hexdigest()
-    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-    rating = "Todas las edades"
-    for keyword, rate in AGE_RATINGS.items():
-        if keyword in nombre_logico.lower() or keyword in nombre_completo.lower():
-            rating = rate
-            break
+QPushButton {
+    background-color: #e0e0e0;
+    border: 2px solid #ccc;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: bold;
+}
 
-    root = ET.Element("app")
-    ET.SubElement(root, "empresa").text = empresa
-    ET.SubElement(root, "nombre_logico").text = nombre_logico
-    ET.SubElement(root, "nombre_completo").text = nombre_completo
-    ET.SubElement(root, "version").text = f"v{version}"
-    ET.SubElement(root, "creado_en").text = "Zorin OS"
-    ET.SubElement(root, "fecha").text = timestamp
-    ET.SubElement(root, "hash").text = hash_val
-    ET.SubElement(root, "clasificacion").text = rating
+QPushButton:hover {
+    background-color: #d6d6d6;
+    border: 2px solid #999;
+}
 
-    tree = ET.ElementTree(root)
-    tree.write(os.path.join(path, "details.xml"))
-
-# 🧱 Comprimir con barra de progreso
-def zip_with_progress(folder_path, output_path):
-    with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-        file_list = []
-        for root, _, files in os.walk(folder_path):
-            for file in files:
-                full_path = os.path.join(root, file)
-                arcname = os.path.relpath(full_path, folder_path)
-                file_list.append((full_path, arcname))
-
-        for full_path, arcname in tqdm(file_list, desc="📦 Comprimiendo", unit="archivo"):
-            zipf.write(full_path, arcname)
-
-# 🏗️ Crear estructura de paquete
-def create_package():
-    subprocess.run(['clear'])
-    print(f">{RED}???.???.???")
-    empresa = input(f"{CYAN}Nombre de la empresa: {RESET}").strip().lower().replace(" ", "-")
-    subprocess.run(['clear'])
-    print(f">{RED}{empresa}.???.???")
-    nombre_logico = input(f"{CYAN}Nombre lógico de la app (sin espacios): {RESET}").strip().lower()
-    subprocess.run(['clear'])
-    print(f">{RED}{empresa}.{nombre_logico}.???")
-    version = input(f"{CYAN}Versión (solo número, ej. 1): {RESET}").strip()
-    subprocess.run(['clear'])
-    print(f">{GREEN}{empresa}.{nombre_logico}.v{version}")
-    nombre_completo = input(f"{CYAN}Nombre completo de la app {GREEN}(RECOMENDADO: {nombre_logico}){CYAN}: {RESET}").strip()
-
-    folder_name = f"{empresa}.{nombre_logico}.v{version}"
-    full_path = os.path.join(BASE_DIR, folder_name)
-
-    for folder in DEFAULT_FOLDERS.split(","):
-        os.makedirs(os.path.join(full_path, folder.strip()), exist_ok=True)
-
-    # Crear archivo principal
-    main_script = os.path.join(full_path, f"{nombre_logico}.v{version}.py")
-    with open(main_script, "w") as f:
-        f.write(f"# {nombre_completo} - v{version}\n# Autor: {empresa}\n\nprint('¡Bienvenido a {nombre_completo}!')\n")
-
-    # Copiar ícono
-    icon_dest = os.path.join(full_path, "app", "app-icon.ico")
-    try:
-        shutil.copy(IPM_ICON_PATH, icon_dest)
-    except Exception as e:
-        subprocess.run(['clear'])
-        print(f"{RED}❌ No se pudo copiar el ícono: {e}{RESET}")
-
-    # Crear requirements.txt
-    requirements_path = os.path.join(full_path, "lib", "requirements.txt")
-    with open(requirements_path, "w") as f:
-        f.write("# Dependencias del paquete\n")
-        f.write("customtkinter\nopencv-python\npillow\n")
-
-    # Crear detalles
-    create_details_xml(full_path, empresa, nombre_logico, nombre_completo, version)
-    subprocess.run(['clear'])
-    print(f"{GREEN}✅ Paquete creado en: {full_path}{RESET}")# 📝 Generar README automáticamente
-    readme_path = os.path.join(full_path, "README.md")
-    readme_text = f"""# {nombre_completo}
-
-Paquete generado con Influent Package Manager.
-
----
-
-## 📦 Ejemplo de uso
-
-```bash
-python3 {empresa}.{nombre_logico}.v{version}/{nombre_logico}.v{version}.py
-```
-
----
-
-## 🧪 Requisitos
-
-```bash
-pip install -r lib/requirements.txt
-```
-
----
-
-## 📁 Estructura
-
-```
-{folder_name}/
-├── app/
-│   ├── {nombre_logico}.v{version}.py
-│   └── app-icon.ico
-├── assets/
-├── config/
-├── docs/
-├── ke/
-├── banderas/
-├── source/
-├── lib/
-│   └── requirements.txt
-└── details.xml
-```
-
----
-
-## 👤 Autor
-
-{empresa}
+QPushButton:pressed {
+    background-color: #c0c0c0;
+    border: 2px solid #666;
+}
 """
 
-    with open(readme_path, "w", encoding="utf-8") as f:
-        f.write(readme_text)
+def ruta_base():
+    if sys.platform.startswith("win"):
+        return os.path.join(os.environ["USERPROFILE"], "Documents", "Influent Packages")
+    else:
+        return os.path.join(os.path.expanduser("~"), "Documentos", "Influent Packages")
 
-    print(f"{GREEN}📝 README.md generado automáticamente en: {full_path}{RESET}")
-
-    
-# 🔨 Construir paquete .ifp/.ifb
-def build_package():
-    print(f"{CYAN}🔨 Construcción de paquete .ifp/.ifb{RESET}")
-    empresa = input(f"{CYAN}Empresa (formato lógico): {RESET}").strip().lower()
-    nombre = input(f"{CYAN}Nombre lógico de la app: {RESET}").strip().lower()
-    version = input(f"{CYAN}Versión (solo número): {RESET}").strip()
-    tipo = input(f"{YELLOW}¿Tipo de paquete? (1 = .ifp normal, 2 = .ifb ligero): {RESET}").strip()
-
-    folder = f"{empresa}.{nombre}.v{version}"
-    path = os.path.join(BASE_DIR, folder)
+def leer_manifest(carpeta):
+    path = os.path.join(carpeta, "manifest.json")
     if not os.path.exists(path):
-        print(f"{RED}❌ No se encontró la carpeta del paquete.{RESET}")
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except:
+        return None
+
+def leer_requirements(carpeta):
+    reqs = []
+    path = os.path.join(carpeta, "requirements.txt")
+    if not os.path.exists(path):
+        return reqs
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            for linea in f:
+                limpio = linea.strip()
+                if limpio and not limpio.startswith("#"):
+                    reqs.append(limpio)
+    except:
+        pass
+    return reqs
+
+def requerimientos_faltantes(lista):
+    faltantes = []
+    for req in lista:
+        try:
+            pkg_resources.require([req])
+        except:
+            faltantes.append(req)
+    return faltantes
+
+def instalar_paquetes(paquetes):
+    for paquete in paquetes:
+        try:
+            subprocess.check_call([sys.executable, "-m", "pip", "install", paquete])
+        except Exception as e:
+            mostrar_mensaje("Error al instalar", f"No se pudo instalar: {paquete}", str(e))
+
+def ejecutar_script(path_script):
+    if not os.path.exists(path_script):
+        mostrar_mensaje("Script no encontrado", f"No existe: {path_script}")
         return
+    try:
+        subprocess.run([sys.executable, path_script], check=True)
+        mostrar_mensaje("Ejecución exitosa", f"El script se ejecutó correctamente:\n{path_script}")
+    except subprocess.CalledProcessError as e:
+        mostrar_mensaje("Error al ejecutar", f"Falló al ejecutar el script", str(e))
 
-    ext = ".ifp" if tipo == "1" else ".ifb"
-    output_file = os.path.join(BASE_DIR, folder + ext)
-    zip_path = output_file.replace(ext, "") + ".zip"
+def mostrar_mensaje(titulo, texto, detalles=""):
+    app = QApplication.instance() or QApplication(sys.argv)
+    mbox = QMessageBox()
+    mbox.setWindowTitle(titulo)
+    mbox.setText(texto)
+    if detalles:
+        mbox.setDetailedText(detalles)
+    mbox.setStandardButtons(QMessageBox.Ok)
+    mbox.exec_()
 
-    zip_with_progress(path, zip_path)
-    os.rename(zip_path, output_file)
+def mostrar_detalles_manifest(manifest):
+    app = QApplication.instance() or QApplication(sys.argv)
+    mbox = QMessageBox()
+    mbox.setWindowTitle(f"Detalles de: {manifest.get('name', 'Paquete IPM')}")
     
-    subprocess.run(['clear'])
-    print(f"{GREEN}✅ Paquete construido: {output_file}{RESET}")
+    texto = (
+        f"👤 Autor: {manifest.get('author', 'Desconocido')}\n"
+        f"📦 Versión: {manifest.get('version', '0.0.1')}\n"
+        f"📝 Descripción:\n{manifest.get('description', 'Sin descripción.')}"
+    )
     
-# 🚀 Menú principal
-def main():
-    os.makedirs(BASE_DIR, exist_ok=True)
-    while True:
-        subprocess.run(['clear'])
-        print(f"""{CYAN}
-╔══════════════════════════════════════╗
-║     {GREEN}INFLUENT PACKAGE MAKER v1{CYAN}        ║
-╚══════════════════════════════════════╝{RESET}
-{GREEN}[1] Crear nuevo paquete
-{YELLOW}[2] Construir paquete (.ifp/.ifb)
-{RED}[0] Salir
-""")
-        option = input(f"{MAGENTA}[>] {RESET}").strip()
-        if option == "1":
-            create_package()
-        elif option == "2":
-            build_package()
-        elif option == "0":
-            subprocess.run(['clear'])
-            print(f"{CYAN}¡Hasta luego! 👋{RESET}")
-            break
-        else:
-            subprocess.run(['clear'])
-            print(f"{RED}❌ Opción inválida. Intenta de nuevo.{RESET}")
+    mbox.setText(texto)
+    detalles = json.dumps(manifest, indent=4, ensure_ascii=False)
+    mbox.setDetailedText(detalles)
+    
+    icono = QApplication.style().standardIcon(QStyle.SP_FileDialogContentsView)
+    mbox.setIconPixmap(icono.pixmap(48, 48))
+    mbox.setStandardButtons(QMessageBox.Ok)
+    mbox.exec_()
+
+def detectar_y_ejecutar():
+    base = ruta_base()
+    carpetas = [f for f in os.listdir(base) if os.path.isdir(os.path.join(base, f))]
+    for nombre in carpetas:
+        ruta = os.path.join(base, nombre)
+        manifest = leer_manifest(ruta)
+        if manifest and "main" in manifest:
+            reqs = leer_requirements(ruta)
+            faltan = requerimientos_faltantes(reqs)
+            if faltan:
+                instalar_paquetes(faltan)
+            mostrar_detalles_manifest(manifest)
+            script = os.path.join(ruta, manifest["main"])
+            ejecutar_script(script)
+            return
+    mostrar_mensaje("No ejecutado", "No se encontró ningún paquete IPM válido con 'main'.")
+
+class IPMWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowFlags(Qt.FramelessWindowHint)
+        self.setFixedSize(400, 300)
+        self.setStyleSheet(STYLE_GLOBAL)
+        self.init_ui()
+
+    def init_ui(self):
+        layout = QVBoxLayout()
+
+        self.label = QLabel("🚀 Lanzador IPM")
+        self.label.setAlignment(Qt.AlignCenter)
+        layout.addWidget(self.label)
+
+        self.btn_verificar = QPushButton("Verificar & Ejecutar")
+        self.btn_verificar.clicked.connect(self.iniciar_verificacion)
+        layout.addWidget(self.btn_verificar)
+
+        self.btn_salir = QPushButton("Salir")
+        self.btn_salir.clicked.connect(self.close)
+        layout.addWidget(self.btn_salir)
+
+        self.setLayout(layout)
+
+    def iniciar_verificacion(self):
+        detectar_y_ejecutar()
 
 if __name__ == "__main__":
-    main()
+    app = QApplication(sys.argv)
+    ventana = IPMWindow()
+    ventana.show()
+    sys.exit(app.exec_())
