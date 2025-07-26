@@ -6,9 +6,9 @@
 ### Nombre logico:
 > empresa.nombre.vX
 ### Carpetas:
-> app,assets,banderas,config,docs,ke,lib,source
+> app,assets,config,docs,lib,source
 ### Archivos generados:
-> "..\details.xml", "app\app-icon.ico", "banderas\manifest.xml", "lib\requeriments.txt", "...\nombre.vX.py", "...\readme.md"
+> "..\details.xml", "app\app-icon.ico", "manifest.xml", "lib\requeriments.txt", "...\nombre.vX.py", "...\readme.md"
 ### Puede ser generado con una IA, Gracias MICROSOFT COPILOT, Por el apoyo que he recibido en la making del project!!!
 
 # 🛠️ Origen del proyecto
