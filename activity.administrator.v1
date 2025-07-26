@@ -1,0 +1,90 @@
+import os, sys, subprocess, requests
+from PyQt5.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QGridLayout
+from PyQt5.QtGui import QFont, QPixmap
+from PyQt5.QtCore import Qt
+
+# 🗂️ Detección multiplataforma de carpeta "Influent Packages"
+def obtener_ruta_base():
+    if sys.platform.startswith("win"):
+        base = os.path.join(os.environ["USERPROFILE"], "Mis Documentos", "Influent Packages")
+    else:
+        try:
+            base = subprocess.check_output(["xdg-user-dir", "DOCUMENTS"]).decode().strip()
+        except:
+            base = os.path.expanduser("~/Documentos")
+        base = os.path.join(base, "Influent Packages")
+    os.makedirs(base, exist_ok=True)
+    return base
+
+# 🌐 Sincronización con repositorio remoto
+def cargar_lista_remota():
+    url = "https://raw.githubusercontent.com/jesusquijada34/store/main/app.list"
+    r = requests.get(url)
+    return [line.strip() for line in r.text.splitlines() if line]
+
+def extraer_info(nombre):
+    partes = nombre.split(".")
+    return {"empresa": partes[0], "app": partes[1], "version": partes[2]}
+
+def paquete_necesita_descarga(nombre, base_path):
+    return not os.path.exists(os.path.join(base_path, nombre))
+
+def descargar_app(info, base_path):
+    url = f"https://raw.githubusercontent.com/jesusquijada34/{info['app']}/{info['app']}.{info['version']}"
+    destino = os.path.join(base_path, f"{info['empresa']}.{info['app']}.{info['version']}")
+    r = requests.get(url)
+    with open(destino, "wb") as f:
+        f.write(r.content)
+
+# 🎴 Componente visual de tarjeta de paquete
+class PackageCard(QWidget):
+    def __init__(self, nombre, ruta_icono):
+        super().__init__()
+        layout = QVBoxLayout()
+        icono = QLabel()
+        pixmap = QPixmap(ruta_icono).scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        icono.setPixmap(pixmap)
+        nombre_lbl = QLabel(nombre)
+        nombre_lbl.setFont(QFont("Segoe UI", 9))
+        nombre_lbl.setAlignment(Qt.AlignCenter)
+        layout.addWidget(icono)
+        layout.addWidget(nombre_lbl)
+        self.setLayout(layout)
+        self.setStyleSheet("background:#f5f5f5; border:1px solid #ccc; padding:10px;")
+
+# 🚀 Ventana principal con grid visual
+class GestorIPM(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("IPM - Gestor Visual Multiplataforma")
+        layout = QVBoxLayout()
+        grid = QGridLayout()
+        ruta_base = obtener_ruta_base()
+        lista = cargar_lista_remota()
+
+        for i, paquete in enumerate(lista):
+            info = extraer_info(paquete)
+            if paquete_necesita_descarga(paquete, ruta_base):
+                try:
+                    descargar_app(info, ruta_base)
+                except:
+                    continue  # Evita bloqueo si la app no existe aún
+
+            # Icono por nombre de app
+            ruta_icono = os.path.join("icons", f"{info['app']}.png")
+            if not os.path.exists(ruta_icono):
+                ruta_icono = os.path.join("icons", "default.png")
+
+            card = PackageCard(paquete, ruta_icono)
+            grid.addWidget(card, i // 4, i % 4)
+
+        layout.addLayout(grid)
+        self.setLayout(layout)
+        self.resize(820, 620)
+
+# ▶️ Lanzador
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    win = GestorIPM()
+    win.show()
+    sys.exit(app.exec_())
