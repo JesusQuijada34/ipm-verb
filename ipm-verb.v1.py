@@ -34,7 +34,7 @@ QPushButton:pressed {
 
 def ruta_base():
     if sys.platform.startswith("win"):
-        return os.path.join(os.environ["USERPROFILE"], "Documents", "Influent Packages")
+        return os.path.join(os.environ["USERPROFILE"], "Mis Documentos", "Influent Packages")
     else:
         return os.path.join(os.path.expanduser("~"), "Documentos", "Influent Packages")
 
