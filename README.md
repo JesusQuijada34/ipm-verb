@@ -1,73 +1,127 @@
 # 🧭 Influent Package Manager (IPM)
-### Influent Package Manager (IPM) es un sistema modular de gestión y empaquetado de aplicaciones, diseñado por Jesús Quijada, con el propósito de simplificar y estandarizar el desarrollo de software distribuible, especialmente en entornos Linux como Zorin OS. Más allá de ser un simple empaquetador, IPM es una filosofía de organización creativa y técnica que refleja una preocupación por la estética, la compatibilidad multiplataforma y la autonomía del desarrollador.
+# 🛠️ IPM Script Template – Powered by Influent Studios
 
-# Estructura de un Paquete Influent:
-### La estructura de un paquete puede ser asi:
-### Nombre logico:
-> empresa.nombre.vX
-### Carpetas:
-> app,assets,config,docs,lib,source
-### Archivos generados:
-> "..\details.xml", "app\app-icon.ico", "manifest.xml", "lib\requeriments.txt", "...\nombre.vX.py", "...\readme.md"
-### Puede ser generado con una IA, Gracias MICROSOFT COPILOT, Por el apoyo que he recibido en la making del project!!!
+## 🧭 Descripción
 
-# 🛠️ Origen del proyecto
-### IPM fue creado como una solución personal para automatizar y estructurar el flujo de trabajo al desarrollar múltiples aplicaciones creativas — como Influent Camera — permitiendo:
+Este proyecto forma parte del ecosistema de herramientas visuales y de automatización desarrollado por Influent Studios. Está pensado como una plantilla base para scripts en Python, compatible con sistemas como Package Maker e IPM (Influent Package Manager).
 
-### Documentar cada app automáticamente
+A través de un diseño ordenado y altamente comentado, permite a desarrolladores y diseñadores iniciar módulos visuales o lógicos sin preocuparse por la estructura inicial. Ideal para quienes valoran compatibilidad multiplataforma, claridad visual, estilo profesional y expansión modular.
 
-### Generar paquetes .ifp (Paquete Full Core) y .ifb (Paquete Lite U) para fácil distribución
+---
 
-### Acompañar cada entrega con su ícono, requerimientos y metadata descriptiva
+## 📁 Generación de estructura y carpetas
 
-### Evitar la dependencia de formatos externos como .deb, .rpm o AppImage
+El entorno permite la generación automática de carpetas y rutas necesarias para alojar el script, sus estilos y recursos visuales:
 
-### Jesús observó la necesidad de algo más sencillo, visual y personalizable, que pudiera evolucionar hacia un ecosistema completo de herramientas Influent — cada una con su propia identidad y propósito.
+- Carpeta principal del proyecto: `self.project_path`
+- Carpetas generadas: app, config, docs, assets, lib
+- Se copia el icono principal `app\app-icon.ico` y se traslada a un nuevo proyecto
+- Se usa `config\` como archivos de configurador y sesiones
+- Se usa `docs\` para la documentacion `index.html` en caso de un `Github Pages`
+- Se usa `assets` para el manejo de archivos multimedia y `meda-graph`
+- Se usa `lib\` para alojar los  `requeriments.txt` de un python o dicha `library` de cualquier lenguaje
+- Se usa `app\` como envoltorio principal de la app para no ocupar espacio en disco
+- Se usa `mod\` o `engine\` (dependiendo de la `v` que se utilice en dicho entorno), para alojar scripts `giratorios` los cuales cambian el comportameinto de el script y dichas reglas. Lo cual se puede exponer a virus si no se emplea de manera correcta
+- Se compila el envoltorio grupal (carpeta de proyecto completa), dentro de la carpeta de Proyectos en su carpeta de Documentos predeterminada por su sistema a un ZIP que puede ser renombrado auto a .ikp (Influent Kompiled Package)
+- Se implementa un antivirus en la v3 para evitar virus y malos despliegues dentro del paquete (volatile)
+- Se implementa a `Gabo AI` con `prompts` predeterminados seguidos de los que pide el usuario para generar proyectos inteligentemente.
+- Ruta de salida para script generado:  
+  `assets/<nombre_interno>.v<versión_formateada>.py`
+- Validación y creación automática:  
+  `os.makedirs(os.path.dirname(ruta_destino), exist_ok=True)`
 
-# 🧠 Filosofía técnica
-> IPM se construye sobre los siguientes principios:
+Esto asegura compatibilidad incluso si el entorno se ejecuta en sistemas sin estructura previa. El creador se encarga de generar carpetas faltantes al copiar `template.py`.
 
-### Legibilidad: El código está cuidadosamente organizado, con variables globales definidas al inicio y menús ANSI que mejoran la experiencia en terminal.
+---
 
-### Modularidad: Cada paquete se aloja en su propia carpeta, con estructura estándar (app, config, docs, assets, lib) para facilitar edición y navegación.
+## 📣 ¿Para quién es este proyecto?
 
-### Automatización inteligente:
+Este repositorio es ideal si tú:
 
-### Generación automática de details.xml con metadatos únicos, hash SHA256, fecha y clasificación de edad por palabras clave.
+- ✅ Quieres comenzar módulos visuales o CLI sin código repetitivo
+- ✅ Buscas compatibilidad entre sistemas como FlurryOS e IPM
+- ✅ Prefieres estructuras comentadas y fáciles de leer
+- ✅ Trabajas con edición visual y quieres una base estilizada
+- ✅ Necesitas generar scripts automáticamente desde interfaces gráficas
 
-### Generación interactiva o automática de README.md con estructura, requisitos, ejemplos y descripción.
+---
 
-### Compresión con barra de progreso visual usando tqdm.
+## 🧪 Capturas de ejemplo
 
-# 👤 Sobre el creador
-### Jesús Quijada es un desarrollador multidisciplinario apasionado por la convergencia entre estética visual y funcionalidad técnica. Con experiencia avanzada en Python, scripting multiplataforma, GUI moderna con CustomTkinter y distribución modular, su enfoque se distingue por:
+- Ejecución visual del IPM:
 
-# Temáticas limpias y vibrantes en el diseño de interfaces
+  ![photo1](assets/photo1.png)
 
-### Iteración constante buscando perfección técnica y visual
+- Contenedor de archivos:
 
-### Autonomía creativa para construir herramientas que van más allá del estándar
+  ![photo2](assets/photo2.png)
 
-### IPM es la manifestación tangible de esa mentalidad: una herramienta creada por y para desarrolladores que quieren controlar cada aspecto de su entrega.
+---
 
-# 🧰 Tecnologías utilizadas
-> Python 3.10+
+## 🔧 Estructura del script `assets\template.py`
 
-> tqdm para barra de progreso
+- Importación modular (`sys`, `os`, `PyQt5`)
+- Variables de color y nombre integradas
+- Interfaz gráfica con `QWidget`, `QPushButton`, `QLabel`
+- Separación de funciones (`init_ui`, `accion`)
+- Línea especial `#strikemode` como delimitador visual para edición controlada
 
-> xml.etree.ElementTree para metadatos
+---
 
-> ANSI para interfaz en terminal
+## 💄 Estilos `.pyqss` para diseño visual
 
-> Formato .ifp y .ifb como estándar personalizado
+El archivo `template.qss` permite aplicar estilos en tiempo real al script:
 
-# 📦 ¿Qué vendrá después?
-### IPM es solo el principio de un ecosistema donde cada app puede ser creada, empaquetada, documentada y distribuida con total estilo y control. Jesús planea integrar funciones como:
+- `QWidget` con fondo personalizado
+- `QPushButton` con hover, padding y bordes redondeados
+- `QLabel` con tipografía controlada
+- Compatible con previsualizadores IPM
 
-### Instalador automático de dependencias
+---
 
-### Detector de GUI y CLI para generar lanzadores .desktop
+## 👤 Sobre el autor – Jesús Quijada
 
-### Exportación directa a USB o Web con firma criptográfica
+Jesús Quijada es diseñador y desarrollador visual, creador de herramientas como FlurryOS, IPM y Package Maker. Trabaja desde Anzoátegui en conectar visuales dinámicos con estructuras multiplataforma compatibles, usando avatares como Gabo Al para dar narrativa a su ecosistema creativo.
 
-### Integración con Influent Dashboard para visualizar apps install
+Su estilo se basa en gradientes, estructuras limpias, automatización y una visión clara para expandir visualmente cualquier marca. Integra redes como Instagram y GitHub Pages para mantener una presencia cohesiva y profesional.
+
+---
+
+## 🚧 Qué esperar para la v3
+
+La próxima versión traerá:
+
+- 🧬 Interfaces puramente terminales con emojis y color
+- 🧠 Generador visual `.pyqss` desde interfaz IPM
+- 🌍 Meta tags automáticos para GitHub Pages y vista social
+- 🎬 Splash animado con rutas preconfiguradas desde creator
+- 💬 Traducción visual con `QTranslator` desde config avanzada
+- 🔁 Presets desde Package Maker y exportación multiplataforma
+
+---
+
+## 🪄 Línea de comando rápida
+
+- Ejecutar desde terminal:
+
+  ```bash
+  python3 packagemaker.vX.py```
+---
+
+## 📬 Contacto y contribuciones
+
+- Instagram: `@jesusquijada34`
+- GitHub: `@jesusquijada34`
+- Telegram: `t.me/jesusquijada34`
+- Licencia: MIT
+- ¿Ideas o mejoras? ¡Envíalas por Pull Request, a `feddbackus.ikp` o a mi correo electronico `jesusquijada.34553902@gmail.com` y se revisan en vivo!
+
+---
+
+## 📑 Changelog reciente
+
+### 🆕 v2.5.2
+- Añadido soporte para generación automática de carpetas
+- README actualizado con sección de uso estructural
+- Inclusión de comandos terminales en sección CLI
+
