@@ -1,5 +1,4 @@
-# 🧭 Influent Package Manager (IPM)
-# 🛠️ IPM Script Template – Powered by Influent Studios
+# 🧭 Influent Package Maker (IPM) – Powered by Influent Studios
 
 ## 🧭 Descripción
 
